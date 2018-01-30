@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+echo 'Restarting MariaDB...'
+systemctl restart mysql
+
+echo 'Restarting php-fpm...'
+systemctl restart php5.6-fpm
+systemctl restart php7.2-fpm
+
+echo 'Restarting nginx...'
+systemctl restart nginx
+
+echo -e '\nDaemons restarted\n'

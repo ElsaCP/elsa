@@ -1,0 +1,32 @@
+#!/bin/bash
+
+DOMAIN=$1
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(dig $DOMAIN +short)
+BASENM=$(echo $DOMAIN | cut -d"." -f1)
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ]; then
+   echo -e '\nPlease input the domain name. Example: elsa-vhost-disable domain.com\n'
+   exit 1
+fi
+
+if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
+    echo -e "\nVirtualHost $DOMAIN dosen't exists or already disabled!\n"
+    exit 1
+fi
+
+echo -e '\nDisabling virtualhost...'
+rm -f /etc/nginx/vhost.d/$DOMAIN.{conf,conf-disable}
+
+echo -e 'Restarting web server...'
+systemctl restart nginx
+
+echo -e "\nVirtual host for domain $DOMAIN was disabled!\n"

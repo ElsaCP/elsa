@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+echo -e '\nHampura min, belum tersedia!'
