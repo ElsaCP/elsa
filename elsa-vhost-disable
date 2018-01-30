@@ -14,17 +14,19 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 if [ -z "$1" ]; then
-   echo -e '\nPlease input the domain name. Example: elsa-vhost-disable domain.com\n'
+   echo -e '\nPlease input the domain name. Example:\n'
+   echo -e '  elsa-vhost-disable domain.com.conf'
+   echo -e '  elsa-vhost-disable domain.com-ssl.conf'
    exit 1
 fi
 
-if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
+if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN" ]]; then
     echo -e "\nVirtualHost $DOMAIN dosen't exists or already disabled!\n"
     exit 1
 fi
 
 echo -e '\nDisabling virtualhost...'
-rm -f /etc/nginx/vhost.d/$DOMAIN.{conf,conf-disable}
+mv /etc/nginx/vhost.d/$DOMAIN /etc/nginx/vhost.d/$DOMAIN-disable
 
 echo -e 'Restarting web server...'
 systemctl restart nginx

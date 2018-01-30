@@ -24,6 +24,8 @@ if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
 fi
 
 echo -e '\nRemoving virtualhost configuration...'
+rm -f /etc/nginx/vhost.d/$DOMAIN-ssl.conf
+rm -f /etc/nginx/vhost.d/$DOMAIN-ssl.conf-disable
 rm -f /etc/nginx/vhost.d/$DOMAIN.conf-disable
 rm -f /etc/nginx/vhost.d/$DOMAIN.conf
 

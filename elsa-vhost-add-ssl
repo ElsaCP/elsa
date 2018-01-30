@@ -1,0 +1,42 @@
+#!/bin/bash
+
+DOMAIN=$1
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(dig $DOMAIN +short)
+BASENM=$(echo $DOMAIN | cut -d"." -f1)
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ]; then
+   echo -e '\nPlease input the domain name. Example: elsa-vhost-add domain.com\n'
+   exit 1
+fi
+
+if [[ -f "/etc/nginx/vhost.d/$DOMAIN-ssl.conf" ]]; then
+    echo -e "\nVirtualHost for domain $DOMAIN already exists, please use disable/enable command!\n"
+    exit 1
+fi
+
+echo -e '\nCreating configuration...'
+cp /etc/nginx/vhost.d/{default-ssl.tpl,$DOMAIN-ssl.conf}
+sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN-ssl.conf
+
+echo -e 'Creating directory...'
+mkdir -p /home/webdata/$DOMAIN/{log,public}
+if [[ ! -f "/home/webdata/$DOMAIN/public/index.php" ]]; then
+    curl pastebin.com/raw/MYBMkGqe -sLo /home/webdata/$DOMAIN/public/index.php
+fi
+find /home/webdata/$DOMAIN/. -type d -exec chmod 0777 {} \;
+find /home/webdata/$DOMAIN/. -type f -exec chmod 0644 {} \;
+chown -R www-data: /home/webdata/$DOMAIN;
+
+echo -e 'Restarting web server...\n'
+systemctl restart nginx
+
+echo -e "\nVirtual host created. You can access your site directory at: /home/webdata/$DOMAIN\n"
