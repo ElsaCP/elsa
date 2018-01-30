@@ -20,7 +20,7 @@ if [ -z "$1" ]; then
    exit 1
 fi
 
-if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN" ]]; then
+if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN-disable" ]]; then
     echo -e "\nVirtualHost $DOMAIN dosen't exists or already enabled!\n"
     exit 1
 fi
