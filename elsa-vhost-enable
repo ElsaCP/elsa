@@ -16,7 +16,7 @@ fi
 if [ -z "$1" ]; then
    echo -e '\nPlease input the domain name. Example:\n'
    echo -e '  elsa-vhost-enable domain.com.conf-disable'
-   echo -e '  elsa-vhost-enable domain.com-ssl.conf-disable'
+   echo -e '  elsa-vhost-enable domain.com-ssl.conf-disable\n'
    exit 1
 fi
 
