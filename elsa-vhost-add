@@ -44,7 +44,7 @@ find /home/webdata/$DOMAIN/. -type d -exec chmod 0777 {} \;
 find /home/webdata/$DOMAIN/. -type f -exec chmod 0644 {} \;
 chown -R www-data: /home/webdata/$DOMAIN;
 
-echo -e 'Restarting web server...\n'
+echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "\nVirtual host created. You can access your site directory at: /home/webdata/$DOMAIN\n"
+echo -e "Virtual host created. You can access your site directory at: /home/webdata/$DOMAIN\n"

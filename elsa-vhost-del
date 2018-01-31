@@ -32,4 +32,4 @@ rm -f /etc/nginx/vhost.d/$DOMAIN.conf
 echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "\nVirtual host removed, but directory for domain $DOMAIN not removed.\n"
+echo -e "\nVirtual host removed, but directory /home/webdata/$DOMAIN not removed.\n"
