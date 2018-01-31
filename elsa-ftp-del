@@ -10,9 +10,9 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] ; then
+if [ -z "$1" ] ; then
    echo -e '\nPlease complete the parameters.'
-   echo -e '\nExample: elsa-ftp-add ftp_user ftp_pass /path/to/home/directory\n'
+   echo -e '\nExample: elsa-ftp-del ftp_user\n'
    exit 1 
 fi
 
