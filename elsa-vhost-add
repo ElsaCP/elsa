@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DOMAIN=$1
-SERVIP=$(curl -s v4.ifconfig.co)
 #CHCKIP=$(dig $DOMAIN +short)
 CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+SERVIP=$(curl -s v4.ifconfig.co)
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 
 #
@@ -19,7 +19,7 @@ if [ -z "$1" ]; then
    exit 1
 fi
 
-if [ "$CHCKIP" != "$SERVIP" ];then
+if [ $CHCKIP != $SERVIP ];then
     echo -e "\nDomain $DOMAIN not pointed to this server."
     echo -e "\nThe domain still pointed to $CHCKIP"
     echo -e "\nPlease fix this problem dude!\n"
@@ -33,7 +33,7 @@ fi
 
 
 echo -e '\nCreating configuration...'
-cp /etc/nginx/vhost.d/{default.tpl,$DOMAIN.conf}
+cp /etc/nginx/vhost.tpl /etc/nginx/vhost.d/$DOMAIN.conf
 sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
 
 echo -e 'Creating directory...'

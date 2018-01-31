@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DOMAIN=$1
-SERVIP=$(curl -s v4.ifconfig.co)
 #CHCKIP=$(dig $DOMAIN +short)
 CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+SERVIP=$(curl -s v4.ifconfig.co)
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
