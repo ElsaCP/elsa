@@ -24,4 +24,4 @@ fi
 echo -e "$ftp_pass\n$ftp_pass" | pure-pw useradd $ftp_user -u ftpuser -g www-data -d $ftp_home -m
 mkdir -p $ftp_home ; chown -R ftpuser:www-data $ftp_home ; pure-pw mkdb
 
-echo -e "\nFTP user $ftp_user created with password: $ftp_pass!\n"
+echo -e "\nFTP user $ftp_user created with password: $ftp_pass\n"
