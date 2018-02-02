@@ -34,6 +34,7 @@ else
 fi
 
 if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    systemctl stop nginx
     echo -e 'Generating Letsencrypt SSL Certificate...\n'
     certbot certonly --standalone --agree-tos -m $certbot_email -d $DOMAIN
 fi
