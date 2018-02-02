@@ -1,14 +1,12 @@
 #!/bin/bash
 
 DOMAIN=$1
-#CHCKIP=$(dig $DOMAIN +short)
-CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
-SERVIP=$(curl -s v4.ifconfig.co)
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
-#
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
@@ -29,23 +27,31 @@ fi
 if [[ -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
     echo -e "\nVirtualHost for domain $DOMAIN already exists, please use disable/enable command!\n"
     exit 1
+else
+    echo -e 'Creating configuration...'
+    cp /etc/nginx/templates/vhost.tpl /etc/nginx/vhost.d/$DOMAIN.conf
+    sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
 fi
 
-
-echo -e '\nCreating configuration...'
-cp /etc/nginx/vhost.tpl /etc/nginx/vhost.d/$DOMAIN.conf
-sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
-
-echo -e 'Creating directory...'
-mkdir -p /home/webdata/$DOMAIN/{log,public}
-if [[ ! -f "/home/webdata/$DOMAIN/public/index.php" ]]; then
-    curl pastebin.com/raw/MYBMkGqe -sLo /home/webdata/$DOMAIN/public/index.php
+if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    echo -e 'Generating Letsencrypt SSL Certificate...\n'
+    certbot certonly --standalone --agree-tos -m $certbot_email -d $DOMAIN
 fi
-find /home/webdata/$DOMAIN/. -type d -exec chmod 0777 {} \;
-find /home/webdata/$DOMAIN/. -type f -exec chmod 0644 {} \;
-chown -R www-data: /home/webdata/$DOMAIN;
+
+if [ ! -d "/srv/$DOMAIN" ]; then
+    echo -e 'Creating directory...'
+    mkdir -p /srv/$DOMAIN/{log,public}
+    echo -e 'Setting up permission for directory...'
+    find /srv/$DOMAIN/. -type d -exec chmod 0777 {} \;
+    find /srv/$DOMAIN/. -type f -exec chmod 0644 {} \;
+    chown -R www-data: /srv/$DOMAIN;
+fi
+
+if [[ ! -f "/srv/$DOMAIN/public/index.php" ]]; then
+    cp /etc/nginx/templates/webpage.tpl /srv/$DOMAIN/public/index.php
+fi
 
 echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "Virtual host created. You can access your site directory at: /home/webdata/$DOMAIN\n"
+echo -e "Virtual host created. You can access your site directory at: /srv/$DOMAIN\n"

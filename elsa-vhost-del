@@ -1,13 +1,12 @@
 #!/bin/bash
 
 DOMAIN=$1
-SERVIP=$(curl -s v4.ifconfig.co)
-CHCKIP=$(dig $DOMAIN +short)
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
-#
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
@@ -24,12 +23,10 @@ if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
 fi
 
 echo -e '\nRemoving virtualhost configuration...'
-rm -f /etc/nginx/vhost.d/$DOMAIN-ssl.conf
-rm -f /etc/nginx/vhost.d/$DOMAIN-ssl.conf-disable
 rm -f /etc/nginx/vhost.d/$DOMAIN.conf-disable
 rm -f /etc/nginx/vhost.d/$DOMAIN.conf
 
 echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "\nVirtual host removed, but directory /home/webdata/$DOMAIN not removed.\n"
+echo -e "\nVirtual host removed, but directory /srv/$DOMAIN not removed.\n"
