@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+echo -e '\nUpdating packages list...'
+apt update
+
+echo -e '\nUpdating system...'
+apt full-upgrade -y
+
+echo -e '\nRemoving uneeded packages...'
+apt autoremove -y
+
+echo -e '\nCleaning packages...'
+apt clean
+
+echo -e 'Everything is up to date boss...\n'
