@@ -3,7 +3,7 @@
 DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
-CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+CHCKIP=$(resolveip -s $DOMAIN)
 certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
 #
