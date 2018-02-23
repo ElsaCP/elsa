@@ -1,0 +1,27 @@
+#!/bin/bash
+
+DIRECTORY=$1
+DIR_OWNER=$2
+
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ] || [ -z "$2" ] ; then
+   echo -e '\nPlease input the directory name and the owner.\n\nExample: elsa-fix-permission /srv/domain.com user:group\n'
+   exit 1
+fi
+
+if [ ! -d "$DIRECTORY" ]; then
+    echo -e "\nDirectory $DIRECTORY doesn't exists!\n"
+    exit 1
+else
+    echo -e '\nSetting up permission for directory...'
+    find "$DIRECTORY." -type d -exec chmod 0777 {} \;
+    find "$DIRECTORY." -type f -exec chmod 0644 {} \;
+    chown -R "$DIR_OWNER" "$DIRECTORY";
+fi
+
+echo -e "\nPermission for directory $DIRECTORY has fixed!\n"
