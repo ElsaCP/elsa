@@ -40,4 +40,6 @@ mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "DROP DATABASE IF EXIS
 mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "DROP USER '$db_name'@'$db_host';"
 mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "FLUSH PRIVILEGES"
 
+if [ $(cat /etc/elsacp-mysql.txt | grep -c $db_name) -eq 1 ]; then sed -i '/'$db_name'/d' /etc/elsacp-mysql.txt ; fi
+
 echo -e "\nDatabase $db_name and user $db_name at $db_host deleted!\n"

@@ -1,8 +1,6 @@
 #!/bin/bash
 
 ftp_user=$1
-ftp_pass=$2
-ftp_home=$3
 
 # Running by root?
 if [[ $EUID -ne 0 ]]; then
@@ -22,5 +20,7 @@ if [ $(cat /etc/pure-ftpd/pureftpd.passwd | grep -c "$ftpuser") ! -eq 0 ]; then
 fi
 
 pure-pw userdel $ftp_user -m ; pure-pw mkdb
+
+if [ $(cat /etc/elsacp-ftpuser.txt | grep -c $ftp_user) -eq 1 ]; then sed -i '/'$ftp_user'/d' /etc/elsacp-ftpuser.txt ; fi
 
 echo -e "\nFTP user $ftp_user deleted, but home directory not removed!\n"

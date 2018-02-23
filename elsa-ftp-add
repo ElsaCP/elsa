@@ -24,6 +24,6 @@ fi
 echo -e "$ftp_pass\n$ftp_pass" | pure-pw useradd $ftp_user -u ftpuser -g www-data -d $ftp_home -m
 mkdir -p $ftp_home ; chown -R ftpuser:www-data $ftp_home ; pure-pw mkdb
 
-if [ $(cat /etc/elsacp-ftpuser.txt | grep -c $db_name) -eq 0 ]; then echo "$ftp_user:$ftp_pass" >> /etc/elsacp-ftpuser.txt ; fi
+if [ $(cat /etc/elsacp-ftpuser.txt | grep -c $ftp_user) -eq 0 ]; then echo "$ftp_user:$ftp_pass" >> /etc/elsacp-ftpuser.txt ; fi
 
 echo -e "\nFTP user $ftp_user created with password: $ftp_pass\n"
