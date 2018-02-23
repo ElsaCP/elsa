@@ -2,4 +2,4 @@
 
 history -c
 clear
-exit
+pkill -kill -u $(whoami)
