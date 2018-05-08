@@ -1,5 +1,4 @@
 #!/bin/bash
-
-history -c
-clear
-pkill -kill -u $(whoami)
+cat /dev/null > ~/.bash_history
+unset HISTFILE
+kill -HUP $PPID

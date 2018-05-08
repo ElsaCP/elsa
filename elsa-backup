@@ -1,0 +1,63 @@
+#!/bin/bash
+
+DATA_PATH=/srv
+BACKUPDIR=/home/backup
+GDRIVE_ID="1Ta9PddriqqWplcuvJzxhZFhchXO5kaiU"
+
+GDRIVE=$(which gdrive)
+MYSQL_BIN=$(which mysql)
+MYSQL_DUMP=$(which mysqldump)
+
+MYSQL_USER=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_user')
+MYSQL_PASS=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_pass')
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+umask 177
+
+##
+# Basic Parameter
+##
+TIMESTAMP=$(date +%F)
+BACKUPTMP=/tmp/backup-$TIMESTAMP
+
+SQL_ZIP="sql-$(hostname -f)-$TIMESTAMP.zip"
+WEB_ZIP="web-$(hostname -f)-$TIMESTAMP.zip"
+CFG_ZIP="cfg-$(hostname -f)-$TIMESTAMP.zip"
+
+mkdir -p $BACKUPDIR
+mkdir -p $BACKUPTMP
+
+##
+# Backup MySQL Data
+##
+ZIP_SQL="db-$(hostname -f)-$TIMESTAMP.zip"
+dbs=`$MYSQL_BIN -u$MYSQL_USER -p$MYSQL_PASS -e "SHOW DATABASES" | grep -Ev "(Database|information_schema|performance_schema|mysql|phpmyadmin|sys)"`
+for db in $dbs; do
+  $MYSQL_DUMP --force --opt -u$MYSQL_USER -p$MYSQL_PASS -d $db > $BACKUPTMP/$db-$TIMESTAMP.sql
+done
+cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && mv -f $SQL_ZIP $BACKUPDIR
+SQL_SIZE=$(echo $(wc -c < $BACKUPTMP/$SQL_ZIP)/1024 | bc)
+
+##
+# Backup Web + vHost Configuration
+##
+VHOST_DIR=/etc/nginx/vhost.d/
+cd $VHOST_DIR ; zip -r $CFG_ZIP * ; mv -f $CFG_ZIP $BACKUPDIR
+cd $DATA_PATH ; zip -r $WEB_ZIP * ; mv -f $WEB_ZIP $BACKUPDIR
+WEB_SIZE=$(echo $(wc -c < $BACKUPDIR/$WEB_ZIP)/1024 | bc)
+
+##
+# Upload to Google Drive
+##
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$CFG_ZIP
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$SQL_ZIP
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$WEB_ZIP
+
+echo -e "\nBackup created, stored at $BACKUPDIR. Total size: SQL: $SQL_SIZE kb, WEB: $WEB_SIZE kb\n"

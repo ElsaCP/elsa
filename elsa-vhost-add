@@ -1,8 +1,11 @@
 #!/bin/bash
+##
+# IP Chek Server: v4.ifconfig.co | whatismyip.akamai.com | ipv6.whatismyip.akamai.com
+##
 
 DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
-SERVIP=$(curl -s v4.ifconfig.co)
+SERVIP=$(curl -s whatismyip.akamai.com)
 CHCKIP=$(resolveip -s $DOMAIN)
 certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
