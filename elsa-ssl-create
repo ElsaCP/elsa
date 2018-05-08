@@ -3,7 +3,8 @@
 DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
-CHCKIP=$(resolveip -s $DOMAIN)
+CHCKIP=$(ping -q -c 1 -t 1 $DOMAIN | grep PING | sed -e "s/).*//" | sed -e "s/.*(//")
+#CHCKIP=$(resolveip -s $DOMAIN)
 #certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
 
 #
