@@ -21,6 +21,6 @@ fi
 
 pure-pw userdel $ftp_user -m ; pure-pw mkdb
 
-if [ $(cat /etc/elsacp-ftpuser.txt | grep -c $ftp_user) -eq 1 ]; then sed -i '/'$ftp_user'/d' /etc/elsacp-ftpuser.txt ; fi
+if [ $(cat /etc/elsacp/ftpuser.txt | grep -c $ftp_user) -eq 1 ]; then sed -i '/'$ftp_user'/d' /etc/elsacp/ftpuser.txt ; fi
 
 echo -e "\nFTP user $ftp_user deleted, but home directory not removed!\n"

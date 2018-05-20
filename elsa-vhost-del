@@ -4,7 +4,8 @@ DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
 CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
-certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
+WEBDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
 
 # Check if running by root
 if [[ $EUID -ne 0 ]]; then
@@ -29,4 +30,4 @@ rm -f /etc/nginx/vhost.d/$DOMAIN.conf
 echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "\nVirtual host removed, but directory /srv/$DOMAIN not removed.\n"
+echo -e "\nVirtual host removed, but directory $WEBDIR/$DOMAIN not removed.\n"

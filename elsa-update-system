@@ -6,16 +6,16 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-echo -e '\nUpdating packages list...'
+echo -e "\n\e[0;35mUpdating packages list\e[0m"
 apt update
 
-echo -e '\nUpdating system...'
+echo -e "\n\e[0;35mUpdating system\e[0m"
 apt full-upgrade -y
 
-echo -e '\nRemoving uneeded packages...'
+echo -e "\n\e[0;35mRemoving uneeded packages\e[0m"
 apt autoremove -y
 
-echo -e '\nCleaning packages...'
+echo -e "\n\e[0;35mCleaning packages\e[0m"
 apt clean
 
-echo -e 'Everything is up to date boss...\n'
+echo -e "\n\e[0;35mEverything is up to date boss\n\e[0m"

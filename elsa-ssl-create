@@ -3,9 +3,8 @@
 DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
-CHCKIP=$(ping -q -c 1 -t 1 $DOMAIN | grep PING | sed -e "s/).*//" | sed -e "s/.*(//")
-#CHCKIP=$(resolveip -s $DOMAIN)
-#certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
+CHCKIP=$(ping -q -c1 -t1 $DOMAIN | grep PING | sed -e "s/).*//" | sed -e "s/.*(//")
+EMAIL=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
 
 #
 # Check if running by root
@@ -35,7 +34,8 @@ else
     systemctl stop nginx
 
     echo -e 'Generating Letsencrypt SSL Certificate...\n'
-    certbot certonly --standalone --quiet --agree-tos --register-unsafely-without-email -d $DOMAIN
+    #certbot certonly --standalone --quiet --agree-tos --register-unsafely-without-email -d $DOMAIN
+	certbot certonly --rsa-key-size 4096 --manual --agree-tos --manual-public-ip-logging-ok --email="$EMAIL" --server=https://acme-v02.api.letsencrypt.org/directory --preferred-challenges=dns --domain="*.$DOMAIN"
 
     echo -e '\nStarting web server service...'
     systemctl restart nginx

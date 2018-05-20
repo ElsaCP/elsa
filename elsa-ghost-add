@@ -5,7 +5,7 @@ GHPORT=$2
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
 CHCKIP=$(resolveip -s $DOMAIN)
-certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
 
 # Check if running by root
 if [[ $EUID -ne 0 ]]; then

@@ -19,9 +19,9 @@ if [ ! -d "$DIRECTORY" ]; then
     exit 1
 else
     echo -e '\nSetting up permission for directory...'
-    find "$DIRECTORY." -type d -exec chmod 0777 {} \;
-    find "$DIRECTORY." -type f -exec chmod 0644 {} \;
-    chown -R "$DIR_OWNER" "$DIRECTORY";
+    find "$DIRECTORY/." -type d -exec chmod 0777 {} \;
+    find "$DIRECTORY/." -type f -exec chmod 0644 {} \;
+    chown -R "$DIR_OWNER" "$DIRECTORY/";
 fi
 
 echo -e "\nPermission for directory $DIRECTORY has fixed!\n"

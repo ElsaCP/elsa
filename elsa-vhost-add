@@ -7,7 +7,8 @@ DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s whatismyip.akamai.com)
 CHCKIP=$(resolveip -s $DOMAIN)
-certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
+WEBDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
 
 # Check if running by root
 if [[ $EUID -ne 0 ]]; then
@@ -42,20 +43,20 @@ if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
     certbot certonly --standalone --agree-tos -m $certbot_email -d $DOMAIN
 fi
 
-if [ ! -d "/srv/$DOMAIN" ]; then
+if [ ! -d "$WEBDIR/$DOMAIN" ]; then
     echo -e 'Creating directory...'
-    mkdir -p /srv/$DOMAIN/{log,public}
+    mkdir -p $WEBDIR/$DOMAIN/{log,public}
     echo -e 'Setting up permission for directory...'
-    find /srv/$DOMAIN/. -type d -exec chmod 0777 {} \;
-    find /srv/$DOMAIN/. -type f -exec chmod 0644 {} \;
-    chown -R www-data: /srv/$DOMAIN;
+    find $WEBDIR/$DOMAIN/. -type d -exec chmod 0777 {} \;
+    find $WEBDIR/$DOMAIN/. -type f -exec chmod 0644 {} \;
+    chown -R www-data: $WEBDIR/$DOMAIN;
 fi
 
-if [[ ! -f "/srv/$DOMAIN/public/index.php" ]]; then
-    cp /etc/nginx/templates/webpage.tpl /srv/$DOMAIN/public/index.php
+if [[ ! -f "$WEBDIR/$DOMAIN/public/index.php" ]]; then
+    cp /etc/nginx/templates/webpage.tpl $WEBDIR/$DOMAIN/public/index.php
 fi
 
 echo -e 'Restarting web server...'
 systemctl restart nginx
 
-echo -e "Virtual host created. You can access your site directory at: /srv/$DOMAIN\n"
+echo -e "Virtual host created. You can access your site directory at: $WEBDIR/$DOMAIN\n"

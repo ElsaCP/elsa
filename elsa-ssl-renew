@@ -3,13 +3,11 @@
 DOMAIN=$1
 BASENM=$(echo $DOMAIN | cut -d"." -f1)
 SERVIP=$(curl -s v4.ifconfig.co)
-CHCKIP=$(ping -q -c 1 -t 1 $DOMAIN | grep PING | sed -e "s/).*//" | sed -e "s/.*(//")
-#CHCKIP=$(resolveip -s $DOMAIN)
-#certbot_email=$(crudini --get /etc/elsacp.cnf 'config' 'certbot_email')
+CHCKIP=$(ping -q -c1 -t1 $DOMAIN | grep PING | sed -e "s/).*//" | sed -e "s/.*(//")
+EMAIL=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
 
 #
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
@@ -35,6 +33,7 @@ else
     systemctl stop nginx
 
     echo -e 'Renewing Letsencrypt SSL Certificate...\n'
+    #certbot renew --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx"
     certbot certonly -n --standalone --quiet --agree-tos --register-unsafely-without-email -d $DOMAIN
 
     echo -e '\nStarting web server service...'

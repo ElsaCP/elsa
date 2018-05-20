@@ -1,15 +1,15 @@
 #!/bin/bash
 
-DATA_PATH=/srv
-BACKUPDIR=/home/backup
-GDRIVE_ID="1Ta9PddriqqWplcuvJzxhZFhchXO5kaiU"
+DATA_PATH=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
+BACKUPDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'backup_dir')
+GDRIVE_ID=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'gdrive_dir')
 
 GDRIVE=$(which gdrive)
 MYSQL_BIN=$(which mysql)
 MYSQL_DUMP=$(which mysqldump)
 
-MYSQL_USER=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_user')
-MYSQL_PASS=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_pass')
+MYSQL_USER=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_user')
+MYSQL_PASS=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_pass')
 
 #
 # Check if running by root
@@ -18,8 +18,6 @@ if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
 fi
-
-umask 177
 
 ##
 # Basic Parameter
@@ -31,8 +29,20 @@ SQL_ZIP="sql-$(hostname -f)-$TIMESTAMP.zip"
 WEB_ZIP="web-$(hostname -f)-$TIMESTAMP.zip"
 CFG_ZIP="cfg-$(hostname -f)-$TIMESTAMP.zip"
 
+rm -fr $BACKUPTMP
 mkdir -p $BACKUPDIR
 mkdir -p $BACKUPTMP
+
+##
+# Count Directory Size
+##
+AVAIL_SIZE="$(df --output=avail -B1 /home | tail -n 1)"
+REQUI_SIZE="$(du -sb $DATA_PATH | cut -f1)"
+
+if (( $(echo "$REQUI_SIZE > $AVAIL_SIZE" | bc -l) )); then
+   echo -e '\nRuang penyimpanan tidak mencukupi bos.\n'
+   exit 1
+fi
 
 ##
 # Backup MySQL Data
@@ -42,15 +52,15 @@ dbs=`$MYSQL_BIN -u$MYSQL_USER -p$MYSQL_PASS -e "SHOW DATABASES" | grep -Ev "(Dat
 for db in $dbs; do
   $MYSQL_DUMP --force --opt -u$MYSQL_USER -p$MYSQL_PASS -d $db > $BACKUPTMP/$db-$TIMESTAMP.sql
 done
-cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && mv -f $SQL_ZIP $BACKUPDIR
+cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && cp -f $SQL_ZIP $BACKUPDIR
 SQL_SIZE=$(echo $(wc -c < $BACKUPTMP/$SQL_ZIP)/1024 | bc)
 
 ##
 # Backup Web + vHost Configuration
 ##
 VHOST_DIR=/etc/nginx/vhost.d/
-cd $VHOST_DIR ; zip -r $CFG_ZIP * ; mv -f $CFG_ZIP $BACKUPDIR
-cd $DATA_PATH ; zip -r $WEB_ZIP * ; mv -f $WEB_ZIP $BACKUPDIR
+cd $VHOST_DIR ; zip -r $CFG_ZIP * ; cp -f $CFG_ZIP $BACKUPDIR
+cd $DATA_PATH ; zip -r $WEB_ZIP * ; cp -f $WEB_ZIP $BACKUPDIR
 WEB_SIZE=$(echo $(wc -c < $BACKUPDIR/$WEB_ZIP)/1024 | bc)
 
 ##

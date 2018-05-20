@@ -7,13 +7,12 @@ MYSQL=$(which mysql)
 AWK=$(which awk)
 GREP=$(which grep)
 
-my_root_user=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_user')
-my_root_pass=$(crudini --get /etc/elsacp.cnf 'config' 'my_root_pass')
-mysql_server=$(crudini --get /etc/elsacp.cnf 'config' 'mysql_server')
+my_root_user=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_user')
+my_root_pass=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_pass')
+mysql_server=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'mysql_server')
 
 #
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
