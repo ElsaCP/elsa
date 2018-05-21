@@ -8,7 +8,6 @@ EMAIL=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
 
 #
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
@@ -31,8 +30,10 @@ if [ "$CHCKIP" != "$SERVIP" ];then
     exit 1
 else
     echo -e 'Generating Letsencrypt SSL Certificate...\n'
-    certbot certonly --standalone --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" \
-      --rsa-key-size 4096 --agree-tos --manual-public-ip-logging-ok --email="$ADMIN_EMAIL" --domain="$DOMAIN"
+	certbot certonly --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" \
+      --rsa-key-size 4096 --manual --agree-tos --manual-public-ip-logging-ok \
+      --server=https://acme-v02.api.letsencrypt.org/directory --preferred-challenges=dns \
+      --email="$EMAIL" --domain="*.$DOMAIN"
 
     echo -e '\nAll done, thank you!\n'
 fi
