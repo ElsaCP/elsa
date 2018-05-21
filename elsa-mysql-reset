@@ -24,7 +24,7 @@ if [ -z "$1" ] ; then
    exit 1 
 fi
 
-TABLES=$($MYSQL -u $my_root_user -p$my_root_pass -h $mysql_server $db_name -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
+TABLES=$($MYSQL -uroot -p$my_root_pass -h $mysql_server $db_name -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
 
 # make sure tables exits
 if [ "$TABLES" == "" ]
@@ -38,7 +38,7 @@ echo -e '\n'
 for t in $TABLES
 do
 	echo -e "\tDeleting $t table from $db_name database..."
-	$MYSQL -u $my_root_user -p$my_root_pass -h $mysql_server $db_name -e "drop table $t"
+	$MYSQL -uroot -p$my_root_pass -h $mysql_server $db_name -e "drop table $t"
 done
 
 echo -e "\nAll tables for database $db_name was dropped!\n"

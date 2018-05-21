@@ -36,10 +36,12 @@ prompt_confirm() {
 
 prompt_confirm "This action will drop the database and user. Are you sure?" || exit 0
 
-mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "DROP DATABASE IF EXISTS $db_name"
-mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "DROP USER '$db_name'@'$db_host';"
-mysql -h $mysql_server -u$my_root_user -p$my_root_pass -e "FLUSH PRIVILEGES"
+mysql -h $mysql_server -uroot -p$my_root_pass -e "DROP DATABASE IF EXISTS $db_name"
+mysql -h $mysql_server -uroot -p$my_root_pass -e "DROP USER '$db_name'@'$db_host';"
+mysql -h $mysql_server -uroot -p$my_root_pass -e "FLUSH PRIVILEGES"
 
-if [ $(cat /etc/elsacp/mysqluser.txt | grep -c $db_name) -eq 1 ]; then sed -i '/'$db_name'/d' /etc/elsacp/mysqluser.txt ; fi
+if [ $(cat /etc/elsacp/mysqluser.txt | grep -c $db_name) -eq 1 ]; then
+  sed -i '/'$db_name'/d' /etc/elsacp/mysqluser.txt
+fi
 
 echo -e "\nDatabase $db_name and user $db_name at $db_host deleted!\n"

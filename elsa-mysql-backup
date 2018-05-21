@@ -8,7 +8,6 @@ mysql_server=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'mysql_server')
 
 #
 # Check if running by root
-#
 if [[ $EUID -ne 0 ]]; then
    echo -e '\nThis script must be run as root.\n'
    exit 1
@@ -20,6 +19,6 @@ if [ -z "$1" ] ; then
    exit 1 
 fi
 
-mysqldump -h $mysql_server -u$my_root_user -p$my_root_pass $db_name > $db_name-$(date +%Y%m%d).sql
+mysqldump -h $mysql_server -uroot -p$my_root_pass $db_name > $db_name-$(date +%Y%m%d).sql
 
 echo -e "\nBackup for database $db_name was created!\n"
