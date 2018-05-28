@@ -50,7 +50,7 @@ fi
 ZIP_SQL="db-$(hostname -f)-$TIMESTAMP.zip"
 dbs=`$MYSQL_BIN -u$MYSQL_USER -p$MYSQL_PASS -e "SHOW DATABASES" | grep -Ev "(Database|information_schema|performance_schema|mysql|phpmyadmin|sys)"`
 for db in $dbs; do
-  $MYSQL_DUMP --force --opt -u$MYSQL_USER -p$MYSQL_PASS -d $db > $BACKUPTMP/$db-$TIMESTAMP.sql
+  $MYSQL_DUMP -u$MYSQL_USER -p$MYSQL_PASS $db > $BACKUPTMP/$db-$TIMESTAMP.sql
 done
 cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && cp -f $SQL_ZIP $BACKUPDIR
 SQL_SIZE=$(echo $(wc -c < $BACKUPTMP/$SQL_ZIP)/1024 | bc)
