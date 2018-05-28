@@ -31,7 +31,7 @@ if [ "$CHCKIP" != "$SERVIP" ];then
 else
     echo -e 'Generating Letsencrypt SSL Certificate...\n'
 	certbot certonly --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" \
-      --rsa-key-size 4096 --manual --agree-tos --manual-public-ip-logging-ok \
+      --rsa-key-size 4096 --manual --agree-tos --manual-public-ip-logging-ok --no-eff-email \
       --server=https://acme-v02.api.letsencrypt.org/directory --preferred-challenges=dns \
       --email="$EMAIL" --domain="*.$DOMAIN"
 

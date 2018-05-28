@@ -25,9 +25,9 @@ fi
 TIMESTAMP=$(date +%F)
 BACKUPTMP=/tmp/backup-$TIMESTAMP
 
-SQL_ZIP="sql-$(hostname -f)-$TIMESTAMP.zip"
-WEB_ZIP="web-$(hostname -f)-$TIMESTAMP.zip"
-CFG_ZIP="cfg-$(hostname -f)-$TIMESTAMP.zip"
+CFG_ZIP="$(hostname -f)-cfg-$TIMESTAMP.zip"
+SQL_ZIP="$(hostname -f)-sql-$TIMESTAMP.zip"
+WEB_ZIP="$(hostname -f)-web-$TIMESTAMP.zip"
 
 rm -fr $BACKUPTMP
 mkdir -p $BACKUPDIR
@@ -56,11 +56,19 @@ cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && cp -f $SQL_ZIP $BACKUPDIR
 SQL_SIZE=$(echo $(wc -c < $BACKUPTMP/$SQL_ZIP)/1024 | bc)
 
 ##
-# Backup Web + vHost Configuration
+# Backup Configuration
+CFGTMP="$BACKUPTMP/config"
+mkdir -p $CFGTMP ; cd $_
+cp -r /etc/nginx/vhost.d/* $CFGTMP/
+cp -r /etc/elsacp* $CFGTMP/
+zip -r $CFG_ZIP *
+cp -f $CFG_ZIP $BACKUPDIR
+
 ##
-VHOST_DIR=/etc/nginx/vhost.d/
-cd $VHOST_DIR ; zip -r $CFG_ZIP * ; cp -f $CFG_ZIP $BACKUPDIR
-cd $DATA_PATH ; zip -r $WEB_ZIP * ; cp -f $WEB_ZIP $BACKUPDIR
+# Backup Web Data
+cd $DATA_PATH
+zip -r $WEB_ZIP *
+cp -f $WEB_ZIP $BACKUPDIR
 WEB_SIZE=$(echo $(wc -c < $BACKUPDIR/$WEB_ZIP)/1024 | bc)
 
 ##

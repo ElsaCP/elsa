@@ -31,7 +31,7 @@ if [ "$CHCKIP" != "$SERVIP" ];then
     exit 1
 else
     echo -e 'Generating Letsencrypt SSL Certificate...\n'
-    certbot certonly --standalone --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" \
+    certbot certonly --standalone --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" --no-eff-email \
       --rsa-key-size 4096 --agree-tos --manual-public-ip-logging-ok --email="$ADMIN_EMAIL" --domain="$DOMAIN"
 
     echo -e '\nAll done, thank you!\n'
