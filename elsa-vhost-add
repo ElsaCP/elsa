@@ -1,0 +1,64 @@
+#!/bin/bash
+##
+# IP Chek Server: v4.ifconfig.co | whatismyip.akamai.com | ipv6.whatismyip.akamai.com
+##
+
+DOMAIN=$1
+SSLCRT=$2
+BASENM=$(echo $DOMAIN | cut -d"." -f1)
+SERVIP=$(curl -s whatismyip.akamai.com)
+CHCKIP=$(resolveip -s $DOMAIN)
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
+WEBDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
+
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ] ; then
+   echo -e '\nPlease input the domain name. Example: elsa-vhost-add domain.com\n'
+   exit 1
+fi
+
+if [ $CHCKIP != $SERVIP ];then
+    echo -e "\nDomain $DOMAIN not pointed to this server."
+    echo -e "\nThe domain still pointed to $CHCKIP\nYour domain must be pointed to $SERVIP"
+    echo -e "\nPlease fix this problem dude!\n"
+    exit 1
+fi
+
+if [[ -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
+    echo -e "\nVirtualHost for domain $DOMAIN already exists, please use disable/enable command!\n"
+    exit 1
+else
+    echo -e 'Creating configuration...'
+    cp /etc/nginx/templates/vhost.tpl /etc/nginx/vhost.d/$DOMAIN.conf
+    sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
+    sed -i "s/SSLCRT/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
+fi
+
+if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    echo -e 'Generating Letsencrypt SSL Certificate...\n'
+    certbot certonly --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx" \
+      --standalone --agree-tos -m $certbot_email -d $DOMAIN
+fi
+
+if [ ! -d "$WEBDIR/$DOMAIN" ]; then
+    echo -e 'Creating directory...'
+    mkdir -p $WEBDIR/$DOMAIN/{log,public}
+    echo -e 'Setting up permission for directory...'
+    find $WEBDIR/$DOMAIN/. -type d -exec chmod 0777 {} \;
+    find $WEBDIR/$DOMAIN/. -type f -exec chmod 0644 {} \;
+    chown -R www-data: $WEBDIR/$DOMAIN;
+fi
+
+if [[ ! -f "$WEBDIR/$DOMAIN/public/index.php" ]]; then
+    cp /etc/nginx/templates/webpage.tpl $WEBDIR/$DOMAIN/public/index.php
+fi
+
+echo -e 'Restarting web server...'
+systemctl restart nginx
+
+echo -e "Virtual host created. You can access your site directory at: $WEBDIR/$DOMAIN\n"

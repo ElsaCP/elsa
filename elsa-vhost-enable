@@ -1,0 +1,32 @@
+#!/bin/bash
+
+DOMAIN=$1
+BASENM=$(echo $DOMAIN | cut -d"." -f1)
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(getent hosts $DOMAIN | awk '{ print $1 }')
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
+WEBDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
+
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ]; then
+   echo -e '\nPlease input the domain name. Example: elsa-vhost-enable domain.com'
+   exit 1
+fi
+
+if [[ ! -f "/etc/nginx/vhost.d/$DOMAIN.conf-disable" ]]; then
+    echo -e "\nVirtualHost $DOMAIN dosen't exists or already enabled!\n"
+    exit 1
+fi
+
+echo -e '\nEnabling virtualhost...'
+mv /etc/nginx/vhost.d/$DOMAIN.conf-disable /etc/nginx/vhost.d/$DOMAIN.conf
+
+echo -e 'Restarting web server...'
+systemctl restart nginx
+
+echo -e "\nVirtual host for domain $DOMAIN was disabled!\n"

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+DATA_PATH=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'webapp_dir')
+BACKUPDIR=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'backup_dir')
+GDRIVE_ID=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'gdrive_dir')
+
+GDRIVE=$(which gdrive)
+MYSQL_BIN=$(which mysql)
+MYSQL_DUMP=$(which mysqldump)
+
+MYSQL_USER=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_user')
+MYSQL_PASS=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_pass')
+
+#
+# Check if running by root
+#
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+##
+# Basic Parameter
+##
+TIMESTAMP=$(date +%F)
+BACKUPTMP=/tmp/backup-$TIMESTAMP
+
+CFG_ZIP="$(hostname -f)-cfg-$TIMESTAMP.zip"
+SQL_ZIP="$(hostname -f)-sql-$TIMESTAMP.zip"
+WEB_ZIP="$(hostname -f)-web-$TIMESTAMP.zip"
+
+rm -fr $BACKUPTMP
+mkdir -p $BACKUPDIR
+mkdir -p $BACKUPTMP
+
+##
+# Count Directory Size
+##
+AVAIL_SIZE="$(df --output=avail -B1 /home | tail -n 1)"
+REQUI_SIZE="$(du -sb $DATA_PATH | cut -f1)"
+
+if (( $(echo "$REQUI_SIZE > $AVAIL_SIZE" | bc -l) )); then
+   echo -e '\nRuang penyimpanan tidak mencukupi bos.\n'
+   exit 1
+fi
+
+##
+# Backup MySQL Data
+##
+ZIP_SQL="db-$(hostname -f)-$TIMESTAMP.zip"
+dbs=`$MYSQL_BIN -u$MYSQL_USER -p$MYSQL_PASS -e "SHOW DATABASES" | grep -Ev "(Database|information_schema|performance_schema|mysql|phpmyadmin|sys)"`
+for db in $dbs; do
+  $MYSQL_DUMP --force --opt -u$MYSQL_USER -p$MYSQL_PASS -d $db > $BACKUPTMP/$db-$TIMESTAMP.sql
+done
+cd $BACKUPTMP ; zip -r $SQL_ZIP *.zip *.sql && cp -f $SQL_ZIP $BACKUPDIR
+SQL_SIZE=$(echo $(wc -c < $BACKUPTMP/$SQL_ZIP)/1024 | bc)
+
+##
+# Backup Configuration
+CFGTMP="$BACKUPTMP/config"
+mkdir -p $CFGTMP ; cd $_
+cp -r /etc/nginx/vhost.d/* $CFGTMP/
+cp -r /etc/elsacp* $CFGTMP/
+zip -r $CFG_ZIP *
+cp -f $CFG_ZIP $BACKUPDIR
+
+##
+# Backup Web Data
+cd $DATA_PATH
+zip -r $WEB_ZIP *
+cp -f $WEB_ZIP $BACKUPDIR
+WEB_SIZE=$(echo $(wc -c < $BACKUPDIR/$WEB_ZIP)/1024 | bc)
+
+##
+# Upload to Google Drive
+##
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$CFG_ZIP
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$SQL_ZIP
+gdrive upload --parent $GDRIVE_ID $BACKUPDIR/$WEB_ZIP
+
+echo -e "\nBackup created, stored at $BACKUPDIR. Total size: SQL: $SQL_SIZE kb, WEB: $WEB_SIZE kb\n"

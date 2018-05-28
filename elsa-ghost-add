@@ -1,0 +1,60 @@
+#!/bin/bash
+
+DOMAIN=$1
+GHPORT=$2
+BASENM=$(echo $DOMAIN | cut -d"." -f1)
+SERVIP=$(curl -s v4.ifconfig.co)
+CHCKIP=$(resolveip -s $DOMAIN)
+certbot_email=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'certbot_email')
+
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ]; then
+   echo -e '\nPlease input the domain name. Example: elsa-vhost-add domain.com\n'
+   exit 1
+fi
+
+if [ $CHCKIP != $SERVIP ];then
+    echo -e "\nDomain $DOMAIN not pointed to this server."
+    echo -e "\nThe domain still pointed to $CHCKIP"
+    echo -e "\nPlease fix this problem dude!\n"
+    exit 1
+fi
+
+if [[ -f "/etc/nginx/vhost.d/$DOMAIN.conf" ]]; then
+    echo -e "\nVirtualHost for domain $DOMAIN already exists, please use disable/enable command!\n"
+    exit 1
+else
+    echo -e 'Creating configuration...'
+    cp /etc/nginx/templates/ghost.tpl /etc/nginx/vhost.d/$DOMAIN.conf
+    sed -i "s/HOSTNAME/$(echo $DOMAIN)/" /etc/nginx/vhost.d/$DOMAIN.conf
+    sed -i "s/GHOSTPORT/$(echo $GHPORT)/" /etc/nginx/vhost.d/$DOMAIN.conf
+fi
+
+if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    systemctl stop nginx
+    echo -e 'Generating Letsencrypt SSL Certificate...\n'
+    certbot certonly --standalone --agree-tos -m $certbot_email -d $DOMAIN
+fi
+
+if [ ! -d "/srv/$DOMAIN" ]; then
+    echo -e 'Creating directory...'
+    mkdir -p /srv/$DOMAIN/{log,public}
+    echo -e 'Setting up permission for directory...'
+    find /srv/$DOMAIN/. -type d -exec chmod 0777 {} \;
+    find /srv/$DOMAIN/. -type f -exec chmod 0644 {} \;
+    chown -R www-data: /srv/$DOMAIN;
+fi
+
+if [[ ! -f "/srv/$DOMAIN/public/index.js" ]]; then
+    cp /etc/nginx/templates/webpage.tpl /srv/$DOMAIN/public/index.php
+fi
+
+echo -e 'Restarting web server...'
+systemctl restart nginx
+
+echo -e "Virtual host created. You can access your site directory at: /srv/$DOMAIN\n"
