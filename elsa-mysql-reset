@@ -1,0 +1,44 @@
+#!/bin/bash
+
+db_name=$1
+
+# Detect paths
+MYSQL=$(which mysql)
+AWK=$(which awk)
+GREP=$(which grep)
+
+my_root_user=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_user')
+my_root_pass=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'my_root_pass')
+mysql_server=$(crudini --get /etc/elsacp/elsacp.conf 'config' 'mysql_server')
+
+#
+# Check if running by root
+if [[ $EUID -ne 0 ]]; then
+   echo -e '\nThis script must be run as root.\n'
+   exit 1
+fi
+
+if [ -z "$1" ] ; then
+   echo -e '\nPlease complete the parameters.'
+   echo -e '\nExample: elsa-mysql-reset awesomedb\n'
+   exit 1 
+fi
+
+TABLES=$($MYSQL -uroot -p$my_root_pass -h $mysql_server $db_name -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
+
+# make sure tables exits
+if [ "$TABLES" == "" ]
+then
+	echo -e "\nError - No table found in $db_name database!\n"
+	exit 3
+fi
+
+# let us do it
+echo -e '\n'
+for t in $TABLES
+do
+	echo -e "\tDeleting $t table from $db_name database..."
+	$MYSQL -uroot -p$my_root_pass -h $mysql_server $db_name -e "drop table $t"
+done
+
+echo -e "\nAll tables for database $db_name was dropped!\n"
