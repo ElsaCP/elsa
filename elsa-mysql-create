@@ -19,7 +19,7 @@ fi
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] ; then
    echo -e '\nPlease complete the parameters.'
    echo -e '\nExample: elsa-mysql-add awesomedb awesomepass localhost\n'
-   exit 1 
+   exit 1
 fi
 
 prompt_confirm() {
@@ -30,8 +30,8 @@ prompt_confirm() {
       [yY]) echo ; return 0 ;;
       [nN]) echo ; return 1 ;;
       *) printf " \033[31m %s \n\033[0m" "invalid input"
-    esac 
-  done  
+    esac
+  done
   echo -e '\n'
 }
 
@@ -47,6 +47,10 @@ fi
 
 mysql -h $mysql_server -uroot -p$my_root_pass -e "CREATE DATABASE IF NOT EXISTS $db_name"
 mysql -h $mysql_server -uroot -p$my_root_pass -e "GRANT ALL PRIVILEGES ON $db_name.* TO '$db_name'@'$db_host' IDENTIFIED BY '$db_pass'"
+
+# Not secure, remove it or use just for creating triggers
+# mysql -h $mysql_server -uroot -p$my_root_pass -e "GRANT SUPER ON *.* TO '$db_name'@'$db_host' IDENTIFIED BY '$db_pass'"
+
 mysql -h $mysql_server -uroot -p$my_root_pass -e "FLUSH PRIVILEGES"
 
 echo -e "\nDatabase $db_name created\n\nHost: $db_host\nUser: $db_name\nPass: $db_pass\n"
