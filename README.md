@@ -14,10 +14,10 @@ Easy Linux Server Administration tool
 Please read: <https://kylewbanks.com/blog/cross-compiling-go-applications-for-multiple-operating-systems-and-architectures>
 
 ```bash
-for GOARCH in 386 amd64; do go build -v -o build/elsa-cli-$GOARCH ; done
+for GOARCH in 386 amd64; do go build -v -o docs/release/elsa-cli-$GOARCH ; done
 ```
 
-## Store version
+## Compiling with version
 
 Please read: <https://sbstjn.com/create-golang-cli-application-with-cobra-and-goxc.html>
 
