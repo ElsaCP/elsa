@@ -1,0 +1,11 @@
+**/build
+
+**/.idea
+**/.vagrant
+**/npm-debug.log
+**/yarn-error.log
+**/composer.lock
+**/tests-*.xml
+**/yarn.lock
+**/.settings
+**/.env
