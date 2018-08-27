@@ -3,9 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"log"
-	"strconv"
 	"runtime"
 	"reflect"
 	"github.com/acobaugh/osrelease"
@@ -30,49 +27,7 @@ var (
 func main() {
 	checkOS()
 	checkConfig()
-
-	isSudo := exec.Command("id", "-u")
-	output, err := isSudo.Output()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// 0 = root, 501 = non-root user
-	i, err := strconv.Atoi(string(output[:len(output)-1]))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if i != 0 {
-		fmt.Println("This program must be run as root! (sudo)")
-		os.Exit(0)
-	}
-
 	cmd.Execute(VERSION, SOURCE_DATE)
-}
-
-func checkConfig() {
-	if _, err := os.Stat(elsa_config_dir); os.IsNotExist(err) {
-		fmt.Println("Initialize configuration files..")
-		err = os.MkdirAll(elsa_config_dir, 0755)
-		if err != nil {
-			fmt.Println("Cannot create configuration directory!")
-			os.Exit(0)
-		}
-	}
-
-	configFile := elsa_config_dir + "/elsacp.conf"
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		fmt.Println("Configuration file %v doesn't exists!", configFile)
-		os.Exit(0)
-	}
-
-	file, err := os.Open(configFile) // For read access.
-	if err != nil {
-		fmt.Println("Cannot read configuration files: %v", file)
-		os.Exit(0)
-	}
 }
 
 func checkOS() {
@@ -124,6 +79,29 @@ func checkOS() {
 func exitFailedCheck(msg string) {
 	fmt.Printf("%v currently is not supported!\n", msg)
 	os.Exit(0)
+}
+
+func checkConfig() {
+	if _, err := os.Stat(elsa_config_dir); os.IsNotExist(err) {
+		fmt.Println("Initialize configuration files..")
+		err = os.MkdirAll(elsa_config_dir, 0755)
+		if err != nil {
+			fmt.Println("Cannot create configuration directory!")
+			os.Exit(0)
+		}
+	}
+
+	configFile := elsa_config_dir + "/elsacp.conf"
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		fmt.Println("Configuration file %v doesn't exists!", configFile)
+		os.Exit(0)
+	}
+
+	file, err := os.Open(configFile) // For read access.
+	if err != nil {
+		fmt.Println("Cannot read configuration files: %v", file)
+		os.Exit(0)
+	}
 }
 
 func inArray(item interface{}, slice interface{}) bool {
