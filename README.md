@@ -1,13 +1,17 @@
 # Elsa CLI
 
-Easy Linux Server Administration tool
+Easy Linux Server Administration tool.
+Currently work on Debian Jessi, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 only.
 
 ## Prepare the requirements
 
-- `go get -v github.com/laher/goxc`
-- `go get -u github.com/spf13/cobra/cobra`
-- `go get github.com/matishsiao/goInfo`
-- `go get github.com/acobaugh/osrelease`
+```bash
+go get -v github.com/laher/goxc
+go get -u github.com/spf13/cobra/cobra
+go get github.com/matishsiao/goInfo
+go get github.com/acobaugh/osrelease
+go get golang.org/x/crypto/acme/autocert
+```
 
 ## Cross compiling
 
