@@ -24,9 +24,9 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func Execute(version string, source_date string) {
-    VERSION = version
-    SOURCE_DATE = source_date
+func Execute(appVersion string, appBuildDate string) {
+    VERSION = appVersion
+    SOURCE_DATE = appBuildDate
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

@@ -14,8 +14,8 @@ import (
 
 // This variables generated during build
 var (
-	VERSION     = "0.0.1"
-	SOURCE_DATE = "2018-08-27T09:47:56+07:00"
+	VERSION     = "0.0.2"
+	SOURCE_DATE = "2018-08-27T10:05:11+07:00"
 )
 
 var (

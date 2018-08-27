@@ -1,7 +1,7 @@
-VERSION=0.0.3
-PATH_BUILD=build/
-FILE_COMMAND=heft
-FILE_ARCH=darwin_amd64
+VERSION=0.0.1
+PATH_BUILD=docs/release/
+FILE_COMMAND=elsa-cli
+FILE_ARCH=linux_amd64
 S3_BUCKET_NAME=downloads.heft.io
 
 clean:
@@ -11,9 +11,13 @@ build: clean build-version
 
 build-version:
 	@echo "Building v$(VERSION)"
-	@$(GOPATH)/bin/goxc \
-	  -pv=$(VERSION) \
-	  -build-ldflags "-X main.VERSION=$(VERSION)"
+    for GOARCH in 386 amd64;
+      do go build -v -o $(PATH_BUILD)/$(FILE_COMMAND)-v$(VERSION)-$GOARCH
+    done
+
+	#@$(GOPATH)/bin/goxc \
+	#  -pv=$(VERSION) \
+	#  -build-ldflags "-X main.VERSION=$(VERSION)"
 
 version:
 	@echo $(VERSION)

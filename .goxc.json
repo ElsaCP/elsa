@@ -1,12 +1,15 @@
 {
   "AppName": "elsa-cli",
   "ConfigVersion": "0.9",
-  "ResourcesExclude": "LICENSE",
+  "PackageVersion": "0.0.2",
+  "ResourcesExclude": "README.md,LICENSE",
+  "MainDirsExclude": "vendor,Godeps,testdata",
   "ArtifactsDest": "docs/release",
   "BuildConstraints": "linux,386,amd64",
   "BuildSettings": {
     "LdFlags": "-s",
     "LdFlagsXVars": {
+      "TimeNow": "main.BUILD_DATE",
       "Version": "main.VERSION"
     }
   },
@@ -21,5 +24,12 @@
     "downloads-page",
     "go-vet",
     "go-test"
-  ]
+  ],
+  "TaskSettings": {
+    "publish-github": {
+      "owner": "elsacp",
+      "prerelease": false,
+      "repository": "elsa-cli"
+    }
+  }
 }
