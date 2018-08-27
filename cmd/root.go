@@ -7,6 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	VERSION string
+    SOURCE_DATE string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "elsa-cli",
 	Short: "A simplified Open Source Linux server administration tool",
@@ -19,7 +24,10 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func Execute() {
+func Execute(version string, source_date string) {
+    VERSION = version
+    SOURCE_DATE = source_date
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
