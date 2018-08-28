@@ -3,7 +3,7 @@
 Easy Linux Server Administration tool.
 Currently work on Debian Jessie, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 only.
 
-__Important Note:__ *This project still heavy development, not ready to use at production server*
+__Important Note:__ *This project still heavy development, not ready to use at production server.*
 
 ## Installing Dependencies
 
@@ -42,11 +42,6 @@ GITHUB_REPO=your_github_project
 ```bash
 make deps
 sudo npm install -g commitizen
-```
-
-```
-git config --global user.name "Your Awesome Name"
-git config --global user.email "you@domain.tld"
 ```
 
 ### If you want to sign commit and release

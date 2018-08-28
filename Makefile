@@ -52,7 +52,7 @@ install:
 		install $(OUTPUT)-x86 '/usr/local/bin/ecp'
     endif
 
-release: dist remove-same-release
+release: dist remove-current-release
 	@echo "Releasing v$(VERSION) to Github"
 	#git tag -s v$(VERSION)
 	@latest_tag=$$(git describe --tags `git rev-list --tags --max-count=1`); \
@@ -62,7 +62,7 @@ release: dist remove-same-release
 	github-release elsacp/$(NAME) v$(VERSION) "$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
 	git pull
 
-pre-release:
+pre-release: dist remove-current-release
 	@echo "Releasing v$(VERSION) to Github"
 	#git tag -s v$(VERSION)
 	@latest_tag=$$(git describe --tags `git rev-list --tags --max-count=1`); \
@@ -74,11 +74,11 @@ pre-release:
 		"$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
 	git pull
 
-remove-same-release:
-	curl -u elsacp:482e1771d8ed185242f4739763457c4e18bec28c -X DELETE https://api.github.com/repos/elsacp/elsa-cli/git/refs/tags/v0.0.1
-	curl -u elsacp:482e1771d8ed185242f4739763457c4e18bec28c -X DELETE https://api.github.com/repos/elsacp/elsa-cli/git/refs/releases/v0.0.1
+remove-current-release:
+	@curl -u $(GITHUB_USER):$(GITHUB_TOKEN) -X DELETE \
+	https://api.github.com/repos/$(GITHUB_USER)/$(GITHUB_REPO)/git/refs/tags/v$(VERSION)
 
 commit:
 	@git cz -s
 
-.PHONY: version deps clean build dist install release pre-release commit
+.PHONY: version deps clean build dist install release pre-release remove-current-release commit
