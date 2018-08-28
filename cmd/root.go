@@ -12,11 +12,12 @@ const defaultConfigPath = "/etc/elsacp/"
 
 var (
 	VERSION string
-    SOURCE_DATE string
+  BUILD_DATE string
+  BUILD_ARCH string
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "elsa-cli",
+	Use: "elsa-cli",
 	Short: "A simplified Open Source Linux server administration tool",
 	Long: "\nElsaCP is a robust and simplified Open Source Linux server administration tool." +
 		"\nBuilt in Indonesia based on the author's experience in managing Linux servers." +
@@ -24,9 +25,9 @@ var rootCmd = &cobra.Command{
 	// Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-            fmt.Println("You need at least one arg!")
-            fmt.Println("Use `help` flag to see the available commands")
-        }
+      fmt.Println("You need at least one arg!")
+      fmt.Println("Use `help` flag to see the available commands")
+    }
 	},
 }
 
@@ -34,42 +35,43 @@ var cfgDir string
 var cfgFile string
 
 func init() {
-    cobra.OnInitialize(initConfig)
-    rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default is /etc/elsacp/elsacp.yaml)")
-    // rootCmd.PersistentFlags().StringVarP(&projectBase, "projectbase", "b", "", "base project directory eg. github.com/spf13/")
-    // rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "Author name for copyright attribution")
-    // rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "Name of license for the project (can provide `licensetext` in config)")
-    // rootCmd.PersistentFlags().Bool("viper", true, "Use Viper for configuration")
-    // viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-    // viper.BindPFlag("projectbase", rootCmd.PersistentFlags().Lookup("projectbase"))
-    // viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
-    // viper.SetDefault("author", "Aris Ripandi <ripandi@pm.me>")
-    // viper.SetDefault("license", "MIT")
+  cobra.OnInitialize(initConfig)
+  rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default is /etc/elsacp/elsacp.yaml)")
+  // rootCmd.PersistentFlags().StringVarP(&projectBase, "projectbase", "b", "", "base project directory eg. github.com/spf13/")
+  // rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "Author name for copyright attribution")
+  // rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "Name of license for the project (can provide `licensetext` in config)")
+  // rootCmd.PersistentFlags().Bool("viper", true, "Use Viper for configuration")
+  // viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
+  // viper.BindPFlag("projectbase", rootCmd.PersistentFlags().Lookup("projectbase"))
+  // viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
+  // viper.SetDefault("author", "Aris Ripandi <ripandi@pm.me>")
+  // viper.SetDefault("license", "MIT")
 }
 
 func initConfig() {
-    if cfgFile != "" {
-        // Use config file from the flag.
-        viper.SetConfigFile(cfgFile)
-    } else {
-        if _, err := os.Stat(defaultConfigPath); os.IsNotExist(err) {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        // Search config file in etc directory
-        viper.SetConfigName(defaultConfigFile)
-        viper.AddConfigPath(defaultConfigPath)
+  if cfgFile != "" {
+    // Use config file from the flag.
+    viper.SetConfigFile(cfgFile)
+  } else {
+    if _, err := os.Stat(defaultConfigPath); os.IsNotExist(err) {
+      fmt.Println(err)
+      os.Exit(1)
     }
+    // Search config file in etc directory
+    viper.SetConfigName(defaultConfigFile)
+    viper.AddConfigPath(defaultConfigPath)
+  }
 
-    if err := viper.ReadInConfig(); err != nil {
-        fmt.Println("Error:", err)
-        os.Exit(1)
-    }
+  if err := viper.ReadInConfig(); err != nil {
+    fmt.Println("Error:", err)
+    os.Exit(1)
+  }
 }
 
-func Execute(appVersion string, appBuildDate string) {
-    VERSION = appVersion
-    SOURCE_DATE = appBuildDate
+func Execute(ver string, build string, arch string) {
+  VERSION    = ver
+  BUILD_DATE = build
+  BUILD_ARCH = arch
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

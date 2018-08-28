@@ -10,16 +10,16 @@ import (
 	// "log"
 )
 
-var key = []byte("JustWait4ItDudes")
+var CHIPER_KEY = []byte("0987654321234567")
 
 /*
 func main() {
     msg := "A quick brown fox jumped over the lazy dog."
-	if encrypted, err := StrEncrypt(key, msg); err != nil {
+	if encrypted, err := StrEncrypt(CHIPER_KEY, msg); err != nil {
 		log.Println(err)
 	} else {
 		log.Printf("ENCRYPTED: %s\n", encrypted)
-		if decrypted, err := StrDecrypt(key, encrypted); err != nil {
+		if decrypted, err := StrDecrypt(CHIPER_KEY, encrypted); err != nil {
 			log.Println(err)
 		} else {
 			log.Printf("DECRYPTED: %s\n", decrypted)

@@ -10,9 +10,8 @@ func init() {
 }
 
 var vhostCreateCmd = &cobra.Command{
-	Use:   "vhost",
-	Short: "Create Nginx virtualhost",
-	Long:  "Generate Nginx VirtualHost configuration file.",
+	Use:   "site",
+	Short: "Generate and configure VirtualHost configuration file.",
 	Run: func(cmd *cobra.Command, args []string) {
         gi := goInfo.GetInfo()
         gi.VarDump()

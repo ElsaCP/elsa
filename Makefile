@@ -1,30 +1,44 @@
-VERSION=0.0.1
-PATH_BUILD=docs/release/
-FILE_COMMAND=elsa-cli
-FILE_ARCH=linux_amd64
-S3_BUCKET_NAME=downloads.heft.io
+#!make
+include .makerc
+export $(shell sed 's/=.*//' .makerc)
+
+VERSION=0.0.2
+BUILD_DATE=$(shell date)
+BUILD_PATH=docs/release
+FILE_NAME=elsa-cli
+OUTPUT=$(BUILD_PATH)/$(FILE_NAME)-v$(VERSION)
 
 clean:
-	@rm -rf ./docs/release/build
+	@rm -rf ./docs/release/*
 
 build: clean build-version
 
 build-version:
-	@echo "Building v$(VERSION)"
-    for GOARCH in 386 amd64;
-        do go build -v -o $(PATH_BUILD)/$(FILE_COMMAND)-v$(VERSION)-$GOARCH
-    done
+	@echo "Building version $(VERSION)\nBuild date: $(BUILD_DATE)"
+	@$(shell perl -pi -e 's#(.*VERSION.*=\x20)(.*)#$${1}"$(VERSION)"#' main.go)
+	@$(shell perl -pi -e 's#(.*BUILD_DATE.*=\x20)(.*)#$${1}"$(BUILD_DATE)"#' main.go)
 
-	#@$(GOPATH)/bin/goxc \
-	#  -pv=$(VERSION) \
-	#  -build-ldflags "-X main.VERSION=$(VERSION)"
+	@echo "Building version $(VERSION) for Linux x64"
+	@$(shell perl -pi -e 's#(.*BUILD_ARCH.*=\x20)(.*)#$${1}"x64"#' main.go)
+	env GOOS=linux GOARCH=amd64 go build -o $(OUTPUT)-x64
+
+	# @for GOARCH in 386 amd64 ; do \
+	# 	${shell perl -pi -e 's#(.*BUILD_ARCH.*=\x20)(.*)#$${1}"'${$$GOARCH}'"#' main.go} \
+    #     env GOOS=linux GOARCH=$$GOARCH go build -o $(OUTPUT)-$$GOARCH ; \
+	# done
 
 version:
-	@echo $(VERSION)
+	@echo "Version: $(VERSION) - $(BUILD_DATE)"
 
 install:
-	@install -d -m 755 '$(HOME)/bin/'
-	install $(PATH_BUILD)$(VERSION)/$(FILE_ARCH)/$(FILE_COMMAND) '$(HOME)/bin/$(FILE_COMMAND)'
+	@echo "Installing $(FILE_NAME) to system"
+	@install -d -m 755 '/usr/local/bin/'
 
-deploy:
-	aws s3 sync $(PATH_BUILD)/$(VERSION) s3://$(S3_BUCKET_NAME)/$(VERSION)
+    ifeq ($(shell uname -p), x86_64)
+		install $(OUTPUT)-x64 '/usr/local/bin/ecp'
+	else
+		install $(OUTPUT)-x86 '/usr/local/bin/ecp'
+    endif
+
+release:
+	@echo "Releasing v$(VERSION) to Github"

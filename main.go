@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/elsacp/elsa-cli/helper"
+	hlp "github.com/elsacp/elsa-cli/helper"
 	"github.com/elsacp/elsa-cli/cmd"
 )
 
 // This variables generated during build
-var VERSION     = "0.0.1"
-var SOURCE_DATE = "2018-08-27T10:05:11+07:00"
+const (
+  VERSION    = "0.0.2"
+  BUILD_DATE = "Tue Aug 28 21:42:31 DST 2018"
+  BUILD_ARCH = ""
+)
 
 func main() {
-	helper.CheckOS()
-    helper.CheckPrivileges()
-	cmd.Execute(VERSION, SOURCE_DATE)
+	hlp.CheckOS()
+  hlp.CheckPrivileges()
+	cmd.Execute(VERSION, BUILD_DATE, BUILD_ARCH)
 }
