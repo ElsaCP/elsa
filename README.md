@@ -3,39 +3,67 @@
 Easy Linux Server Administration tool.
 Currently work on Debian Jessie, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 only.
 
-## Prepare the requirements
+__Important Note:__ *This project still heavy development, not ready to use at production server*
 
-```
-git config --global user.name "Your Awesome Name"
-git config --global user.email "you@domain.tld"
+## Installing Dependencies
 
-# Used if you want to sign commit and release
-gpg --keyid-format long --list-keys
-git config --global user.signingkey xxxxxxxxxxxxxxxx
+```bash
+apt install gcc make cmake build-essential nodejs npm
 ```
 
 ```bash
 make deps
-sudo npm install -g np commitizen semantic-release
 ```
 
-## Cross compiling
-
-Please read: <https://kylewbanks.com/blog/cross-compiling-go-applications-for-multiple-operating-systems-and-architectures>
+## Automatic Build
 
 ```bash
-for GOARCH in 386 amd64; do go build -v -o docs/release/elsa-cli-$GOARCH ; done
+make build
 ```
 
-## Compiling with version
-
-Please read: <https://sbstjn.com/create-golang-cli-application-with-cobra-and-goxc.html>
+## Installing to system
 
 ```bash
-apt install gcc make cmake build-essential
+make install
+```
+
+## Prepare the requirements for developing
+
+Create `.makerc` file and put this configuration:
+
+```plain
+CHIPER_KEY=16CharactersSalt
+
+GITHUB_TOKEN=your_github_token
+GITHUB_USER=your_github_username
+GITHUB_REPO=your_github_project
 ```
 
 ```bash
-go get -v github.com/laher/goxc
-goxc -pv=0.0.1 -build-ldflags "-X main.VERSION=0.0.1"
+make deps
+sudo npm install -g commitizen
 ```
+
+```
+git config --global user.name "Your Awesome Name"
+git config --global user.email "you@domain.tld"
+```
+
+### If you want to sign commit and release
+
+```bash
+gpg --keyid-format long --list-keys
+git config --global user.signingkey xxxxxxxxxxxxxxxx
+```
+
+Read more about [signing commit with GPG](https://help.github.com/articles/signing-commits-with-gpg/)
+and [signing tags using GPG](https://help.github.com/articles/signing-tags-using-gpg/).
+
+## References
+
+- <https://kylewbanks.com/blog/cross-compiling-go-applications-for-multiple-operating-systems-and-architectures>
+- <https://sbstjn.com/create-golang-cli-application-with-cobra-and-goxc.html>
+
+## License
+
+This project license under [`MIT`](./LICENSE).
