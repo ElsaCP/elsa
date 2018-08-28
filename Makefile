@@ -12,7 +12,7 @@ build: clean build-version
 build-version:
 	@echo "Building v$(VERSION)"
     for GOARCH in 386 amd64;
-      do go build -v -o $(PATH_BUILD)/$(FILE_COMMAND)-v$(VERSION)-$GOARCH
+        do go build -v -o $(PATH_BUILD)/$(FILE_COMMAND)-v$(VERSION)-$GOARCH
     done
 
 	#@$(GOPATH)/bin/goxc \
