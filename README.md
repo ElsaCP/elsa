@@ -16,7 +16,7 @@ go get golang.org/x/crypto/acme/autocert
 Some build tools:
 
 ```bash
-sudo npm install -g git-upload semantic-release
+sudo npm install -g commitizen semantic-release
 ```
 
 ## Cross compiling
