@@ -42,3 +42,6 @@ install:
 
 release:
 	@echo "Releasing v$(VERSION) to Github"
+
+commit:
+	@git cz
