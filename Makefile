@@ -2,36 +2,48 @@
 include .makerc
 export $(shell sed 's/=.*//' .makerc)
 
-VERSION=0.0.2
+NAME=elsa-cli
+VERSION=0.0.1
 BUILD_DATE=$(shell date)
-BUILD_PATH=docs/release
-FILE_NAME=elsa-cli
-OUTPUT=$(BUILD_PATH)/$(FILE_NAME)-v$(VERSION)
-
-clean:
-	@rm -rf ./docs/release/*
-
-build: clean build-version
-
-build-version:
-	@echo "Building version $(VERSION)\nBuild date: $(BUILD_DATE)"
-	@$(shell perl -pi -e 's#(.*VERSION.*=\x20)(.*)#$${1}"$(VERSION)"#' main.go)
-	@$(shell perl -pi -e 's#(.*BUILD_DATE.*=\x20)(.*)#$${1}"$(BUILD_DATE)"#' main.go)
-
-	@echo "Building version $(VERSION) for Linux x64"
-	@$(shell perl -pi -e 's#(.*BUILD_ARCH.*=\x20)(.*)#$${1}"x64"#' main.go)
-	env GOOS=linux GOARCH=amd64 go build -o $(OUTPUT)-x64
-
-	# @for GOARCH in 386 amd64 ; do \
-	# 	${shell perl -pi -e 's#(.*BUILD_ARCH.*=\x20)(.*)#$${1}"'${$$GOARCH}'"#' main.go} \
-    #     env GOOS=linux GOARCH=$$GOARCH go build -o $(OUTPUT)-$$GOARCH ; \
-	# done
+BUILD_PATH=$(shell pwd)/build
+OUTPUT=$(BUILD_PATH)/$(NAME)-$(VERSION)
 
 version:
 	@echo "Version: $(VERSION) - $(BUILD_DATE)"
 
+deps:
+	go get -u github.com/spf13/cobra/cobra
+	go get github.com/spf13/viper
+	go get github.com/matishsiao/goInfo
+	go get github.com/acobaugh/osrelease
+	go get golang.org/x/crypto/acme/autocert
+	go get github.com/c4milo/github-release
+	go get github.com/mitchellh/gox
+
+clean:
+	@echo "Clearing build directory for previous build with current version"
+	@rm -rf $(OUTPUT)-*
+
+build: clean
+	@echo "Building version $(VERSION)\nBuild date: $(BUILD_DATE)"
+	@$(shell perl -pi -e 's#(.*VERSION.*=\x20)(.*)#$${1}"$(VERSION)"#' main.go)
+	@$(shell perl -pi -e 's#(.*BUILD_DATE.*=\x20)(.*)#$${1}"$(BUILD_DATE)"#' main.go)
+
+	@gox -ldflags "-X main.VERSION=$(VERSION)" \
+		-osarch="linux/amd64" -osarch="linux/386" \
+		-output "$(OUTPUT)-{{.OS}}-{{.Arch}}" \
+		./...
+
+dist: build
+	$(eval FILES := $(shell ls build))
+	@rm -rf dist && mkdir -p dist
+	@for f in $(FILES); do \
+		(cd $(shell pwd)/build/ && tar -cvzf ../dist/$$f.tar.gz $$f); \
+		(cd $(shell pwd)/dist/ && shasum -a 512 $$f.tar.gz > $$f.sha512); \
+	done
+
 install:
-	@echo "Installing $(FILE_NAME) to system"
+	@echo "Installing $(NAME) to system"
 	@install -d -m 755 '/usr/local/bin/'
 
     ifeq ($(shell uname -p), x86_64)
@@ -42,6 +54,10 @@ install:
 
 release:
 	@echo "Releasing v$(VERSION) to Github"
+	git tag -s v$(VERSION)
+	git tag -v v$(VERSION)
 
 commit:
 	@git cz
+
+.PHONY: version deps clean build dist install release commit

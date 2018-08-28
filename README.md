@@ -5,18 +5,18 @@ Currently work on Debian Jessie, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 o
 
 ## Prepare the requirements
 
-```bash
-go get -u github.com/spf13/cobra/cobra
-go get github.com/spf13/viper
-go get github.com/matishsiao/goInfo
-go get github.com/acobaugh/osrelease
-go get golang.org/x/crypto/acme/autocert
+```
+git config --global user.name "Your Awesome Name"
+git config --global user.email "you@domain.tld"
+
+# Used if you want to sign commit and release
+gpg --keyid-format long --list-keys
+git config --global user.signingkey xxxxxxxxxxxxxxxx
 ```
 
-Some build tools:
-
 ```bash
-sudo npm install -g commitizen semantic-release
+make deps
+sudo npm install -g np commitizen semantic-release
 ```
 
 ## Cross compiling
