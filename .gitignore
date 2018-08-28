@@ -56,5 +56,5 @@ Temporary Items
 **/.env
 
 **/.releaserc
-# **/.makerc
+**/.makerc
 **/elsa-cli
