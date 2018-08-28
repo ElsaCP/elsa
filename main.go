@@ -10,13 +10,10 @@ import (
 )
 
 // This variables generated during build
-var (
-	VERSION     = "0.0.2"
-	SOURCE_DATE = "2018-08-27T10:05:11+07:00"
-)
+var VERSION     = "0.0.2"
+var SOURCE_DATE = "2018-08-27T10:05:11+07:00"
 
 var (
-	elsa_config_dir = "/etc/elsacp"
 	osList          = []string{"linux"}
 	archList        = []string{"386", "amd64"}
 	distroList      = []string{"Debian GNU/Linux", "Ubuntu"}
@@ -26,7 +23,6 @@ var (
 
 func main() {
 	checkOS()
-	checkConfig()
 	cmd.Execute(VERSION, SOURCE_DATE)
 }
 
@@ -79,29 +75,6 @@ func checkOS() {
 func exitFailedCheck(msg string) {
 	fmt.Printf("%v currently is not supported!\n", msg)
 	os.Exit(0)
-}
-
-func checkConfig() {
-	if _, err := os.Stat(elsa_config_dir); os.IsNotExist(err) {
-		fmt.Println("Initialize configuration files..")
-		err = os.MkdirAll(elsa_config_dir, 0755)
-		if err != nil {
-			fmt.Println("Cannot create configuration directory!")
-			os.Exit(0)
-		}
-	}
-
-	configFile := elsa_config_dir + "/elsacp.conf"
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		fmt.Println("Configuration file %v doesn't exists!", configFile)
-		os.Exit(0)
-	}
-
-	file, err := os.Open(configFile) // For read access.
-	if err != nil {
-		fmt.Println("Cannot read configuration files: %v", file)
-		os.Exit(0)
-	}
 }
 
 func inArray(item interface{}, slice interface{}) bool {

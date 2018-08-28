@@ -46,8 +46,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-**/elsa-cli
-
 **/.idea
 **/.vagrant
 **/npm-debug.log
@@ -56,3 +54,6 @@ Temporary Items
 **/yarn.lock
 **/.settings
 **/.env
+
+**/config_sample.yaml
+**/elsa-cli

@@ -1,13 +1,13 @@
 # Elsa CLI
 
 Easy Linux Server Administration tool.
-Currently work on Debian Jessi, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 only.
+Currently work on Debian Jessie, Debian Stretch, Ubuntu 16.04 and Ubuntu 18.04 only.
 
 ## Prepare the requirements
 
 ```bash
-go get -v github.com/laher/goxc
 go get -u github.com/spf13/cobra/cobra
+go get github.com/spf13/viper
 go get github.com/matishsiao/goInfo
 go get github.com/acobaugh/osrelease
 go get golang.org/x/crypto/acme/autocert
@@ -30,5 +30,6 @@ apt install gcc make cmake build-essential
 ```
 
 ```bash
+go get -v github.com/laher/goxc
 goxc -pv=0.0.1 -build-ldflags "-X main.VERSION=0.0.1"
 ```
