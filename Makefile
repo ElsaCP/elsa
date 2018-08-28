@@ -54,10 +54,27 @@ install:
 
 release:
 	@echo "Releasing v$(VERSION) to Github"
-	git tag -s v$(VERSION)
-	git tag -v v$(VERSION)
+	#git tag -s v$(VERSION)
+	@latest_tag=$$(git describe --tags `git rev-list --tags --max-count=1`); \
+	comparison="$$latest_tag..HEAD"; \
+	if [ -z "$$latest_tag" ]; then comparison=""; fi; \
+	changelog=$$(git log $$comparison --oneline --no-merges); \
+	github-release elsacp/$(NAME) $(VERSION) "$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
+	git pull
+
+pre-release:
+	@echo "Releasing v$(VERSION) to Github"
+	#git tag -s v$(VERSION)
+	@latest_tag=$$(git describe --tags `git rev-list --tags --max-count=1`); \
+	comparison="$$latest_tag..HEAD"; \
+	if [ -z "$$latest_tag" ]; then comparison=""; fi; \
+	changelog=$$(git log $$comparison --oneline --no-merges); \
+	env GITHUB_TOKEN=$(GITHUB_TOKEN) github-release -prerelease \
+		$(GITHUB_USER)/$(GITHUB_REPO) $(VERSION) master \
+		"$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
+	git pull
 
 commit:
-	@git cz
+	@git cz -s
 
-.PHONY: version deps clean build dist install release commit
+.PHONY: version deps clean build dist install release pre-release commit
