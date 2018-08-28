@@ -13,6 +13,12 @@ go get github.com/acobaugh/osrelease
 go get golang.org/x/crypto/acme/autocert
 ```
 
+Some build tools:
+
+```bash
+sudo npm install -g git-upload semantic-release
+```
+
 ## Cross compiling
 
 Please read: <https://kylewbanks.com/blog/cross-compiling-go-applications-for-multiple-operating-systems-and-architectures>

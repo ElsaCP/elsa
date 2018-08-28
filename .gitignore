@@ -55,5 +55,6 @@ Temporary Items
 **/.settings
 **/.env
 
-**/config_sample.yaml
+**/.releaserc
+# **/.makerc
 **/elsa-cli
