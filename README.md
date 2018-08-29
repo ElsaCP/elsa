@@ -24,7 +24,7 @@ make build
 ## Installing to system
 
 ```bash
-make install
+sudo make install
 ```
 
 ## Prepare the requirements for developing
