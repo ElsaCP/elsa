@@ -15,8 +15,7 @@ func init() {
   stackCmd.AddCommand(subStackNginx)
   stackCmd.AddCommand(subStackMySQL)
   stackCmd.AddCommand(subStackPgSQL)
-  stackCmd.AddCommand(subStackPhp56)
-  stackCmd.AddCommand(subStackPhp72)
+  stackCmd.AddCommand(subStackPhp)
   stackCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 }
 
@@ -40,8 +39,7 @@ var subStackAll = &cobra.Command{
     subStackNginx.Execute()
     subStackMySQL.Execute()
     subStackPgSQL.Execute()
-    subStackPhp56.Execute()
-    subStackPhp72.Execute()
+    subStackPhp.Execute()
   },
 }
 
@@ -57,7 +55,7 @@ var subStackMySQL = &cobra.Command{
   Use:   "mysql",
   Short: "Install MySQL packages",
   Run: func(cmd *cobra.Command, args []string) {
-    stack.InstallNginx(Verbose)
+    fmt.Println("TODO")
   },
 }
 
@@ -65,22 +63,14 @@ var subStackPgSQL = &cobra.Command{
   Use:   "pgsql",
   Short: "Install PostgreSQL packages",
   Run: func(cmd *cobra.Command, args []string) {
-    stack.InstallNginx(Verbose)
+    fmt.Println("TODO")
   },
 }
 
-var subStackPhp56 = &cobra.Command{
-  Use:   "pgsql",
+var subStackPhp = &cobra.Command{
+  Use:   "php",
   Short: "Install PostgreSQL packages",
   Run: func(cmd *cobra.Command, args []string) {
-    stack.InstallNginx(Verbose)
-  },
-}
-
-var subStackPhp72 = &cobra.Command{
-  Use:   "pgsql",
-  Short: "Install PostgreSQL packages",
-  Run: func(cmd *cobra.Command, args []string) {
-    stack.InstallNginx(Verbose)
+    fmt.Println("TODO")
   },
 }
