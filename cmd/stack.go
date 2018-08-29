@@ -11,7 +11,12 @@ var Verbose bool
 
 func init() {
 	rootCmd.AddCommand(stackCmd)
+  stackCmd.AddCommand(subStackAll)
   stackCmd.AddCommand(subStackNginx)
+  stackCmd.AddCommand(subStackMySQL)
+  stackCmd.AddCommand(subStackPgSQL)
+  stackCmd.AddCommand(subStackPhp56)
+  stackCmd.AddCommand(subStackPhp72)
   stackCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 }
 
@@ -28,9 +33,53 @@ var stackCmd = &cobra.Command{
 	},
 }
 
+var subStackAll = &cobra.Command{
+  Use:   "all",
+  Short: "Install full stack packages",
+  Run: func(cmd *cobra.Command, args []string) {
+    subStackNginx.Execute()
+    subStackMySQL.Execute()
+    subStackPgSQL.Execute()
+    subStackPhp56.Execute()
+    subStackPhp72.Execute()
+  },
+}
+
 var subStackNginx = &cobra.Command{
   Use:   "nginx",
-  Short: "Install Nginx package for static sites",
+  Short: "Install Nginx packages for static sites",
+  Run: func(cmd *cobra.Command, args []string) {
+    stack.InstallNginx(Verbose)
+  },
+}
+
+var subStackMySQL = &cobra.Command{
+  Use:   "mysql",
+  Short: "Install MySQL packages",
+  Run: func(cmd *cobra.Command, args []string) {
+    stack.InstallNginx(Verbose)
+  },
+}
+
+var subStackPgSQL = &cobra.Command{
+  Use:   "pgsql",
+  Short: "Install PostgreSQL packages",
+  Run: func(cmd *cobra.Command, args []string) {
+    stack.InstallNginx(Verbose)
+  },
+}
+
+var subStackPhp56 = &cobra.Command{
+  Use:   "pgsql",
+  Short: "Install PostgreSQL packages",
+  Run: func(cmd *cobra.Command, args []string) {
+    stack.InstallNginx(Verbose)
+  },
+}
+
+var subStackPhp72 = &cobra.Command{
+  Use:   "pgsql",
+  Short: "Install PostgreSQL packages",
   Run: func(cmd *cobra.Command, args []string) {
     stack.InstallNginx(Verbose)
   },
