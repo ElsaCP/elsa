@@ -110,7 +110,7 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 // It will return an error if the system's secure random
 // number generator fails to function correctly, in which
 // case the caller should not continue.
-func GenerateRandomString(n ...int) (string, error) {
+func StrRand(n ...int) (string, error) {
   lp := 8
   if len(n) > 0 {
     lp = n[0]
@@ -131,7 +131,11 @@ func GenerateRandomString(n ...int) (string, error) {
 // It will return an error if the system's secure random
 // number generator fails to function correctly, in which
 // case the caller should not continue.
-func GenerateRandomStringURLSafe(n int) (string, error) {
-	b, err := GenerateRandomBytes(n)
+func StrRandURLSafe(n ...int) (string, error) {
+  lp := 8
+  if len(n) > 0 {
+    lp = n[0]
+  }
+	b, err := GenerateRandomBytes(lp)
 	return base64.URLEncoding.EncodeToString(b), err
 }

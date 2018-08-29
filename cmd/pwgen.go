@@ -8,11 +8,11 @@ import (
   "strconv"
 )
 
-var Length int
+var SafeUrl bool
 
 func init() {
 	rootCmd.AddCommand(pwgenCmd)
-  // pwgenCmd.PersistentFlags().BoolVarP(&Length, "length", "v", false, "verbose output")
+  pwgenCmd.PersistentFlags().BoolVarP(&SafeUrl, "safe-url", "s", false, "return a URL-safe, base64 encoded")
 }
 
 var pwgenCmd = &cobra.Command{
@@ -26,11 +26,27 @@ var pwgenCmd = &cobra.Command{
         fmt.Println(err)
         os.Exit(1)
       }
-      p, _ := hlp.GenerateRandomString(i)
-      fmt.Println(p)
+      if (SafeUrl) {
+        PrintPwgenSafe(i)
+      } else {
+        PrintPwgen(i)
+      }
     } else {
-      p, _ := hlp.GenerateRandomString(8)
-      fmt.Println(p)
+      if (SafeUrl) {
+        PrintPwgenSafe(8)
+      } else {
+        PrintPwgen(8)
+      }
     }
 	},
+}
+
+func PrintPwgen(n int) {
+  p, _ := hlp.StrRand(n)
+  fmt.Println(p)
+}
+
+func PrintPwgenSafe(n int) {
+  p, _ := hlp.StrRandURLSafe(n)
+  fmt.Println(p)
 }
