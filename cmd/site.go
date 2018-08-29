@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-    "github.com/matishsiao/goInfo"
+  "github.com/matishsiao/goInfo"
 )
 
 func init() {

@@ -11,7 +11,7 @@ var (
 	osList          = []string{"linux"}
 	archList        = []string{"386", "amd64"}
 	distroList      = []string{"Debian GNU/Linux", "Ubuntu"}
-	debianVersion   = []string{"8", "9"}
+	debianVersion   = []string{"9"}
 	ubuntuVersion   = []string{"16.04", "18.04"}
 )
 

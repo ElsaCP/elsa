@@ -22,7 +22,6 @@ var rootCmd = &cobra.Command{
 	Long: "\nElsaCP is a robust and simplified Open Source Linux server administration tool." +
 		"\nBuilt in Indonesia based on the author's experience in managing Linux servers." +
 		"\n\nComplete documentation available at https://elsacp.github.io",
-	// Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
       fmt.Println("You need at least one arg!")
@@ -36,16 +35,8 @@ var cfgFile string
 
 func init() {
   cobra.OnInitialize(initConfig)
-  rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default is /etc/elsacp/elsacp.yaml)")
-  // rootCmd.PersistentFlags().StringVarP(&projectBase, "projectbase", "b", "", "base project directory eg. github.com/spf13/")
-  // rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "Author name for copyright attribution")
-  // rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "Name of license for the project (can provide `licensetext` in config)")
-  // rootCmd.PersistentFlags().Bool("viper", true, "Use Viper for configuration")
-  // viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-  // viper.BindPFlag("projectbase", rootCmd.PersistentFlags().Lookup("projectbase"))
-  // viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
-  // viper.SetDefault("author", "Aris Ripandi <ripandi@pm.me>")
-  // viper.SetDefault("license", "MIT")
+  rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default is " + defaultConfigPath + defaultConfigFile + ".yaml)")
+  viper.SetDefault("config", defaultConfigPath + defaultConfigFile + ".yaml")
 }
 
 func initConfig() {
@@ -77,28 +68,3 @@ func Execute(ver string, build string, arch string) {
 		os.Exit(1)
 	}
 }
-
-/*
-func checkConfig() {
-	if _, err := os.Stat(cfgDir); os.IsNotExist(err) {
-		fmt.Println("Initialize configuration files..")
-		err = os.MkdirAll(cfgDir, 0755)
-		if err != nil {
-			fmt.Println("Cannot create configuration directory!")
-			os.Exit(0)
-		}
-	}
-
-	configFile := cfgDir + "/elsacp.conf"
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		fmt.Println("Configuration file %v doesn't exists!", configFile)
-		os.Exit(0)
-	}
-
-	file, err := os.Open(configFile) // For read access.
-	if err != nil {
-		fmt.Println("Cannot read configuration files: %v", file)
-		os.Exit(0)
-	}
-}
-*/
