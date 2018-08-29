@@ -23,7 +23,7 @@ var testCmd = &cobra.Command{
     }
     cf := packr.NewBox(pwd + "/manifest")
     rs := cf.String("nginx/nginx.conf")
-    fo := pwd + "/nginx.conf"
+    fo := "/etc/nginx/nginx.conf"
     hlp.WriteFile(fo, rs)
     fmt.Println("File writen to: " + fo)
 	},
