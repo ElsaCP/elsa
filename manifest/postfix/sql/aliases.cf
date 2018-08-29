@@ -1,0 +1,5 @@
+user = elsa_vmail
+password = dc976b8caae4e9d4
+hosts = 127.0.0.1
+dbname = elsa_vmail
+query = select concat(destination_username, '@', destination_domain) as destinations from vmail_aliases where source_username = '%u' and source_domain = '%d' and enabled = true;

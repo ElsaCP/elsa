@@ -1,0 +1,5 @@
+user = elsa_vmail
+password = dc976b8caae4e9d4
+hosts = 127.0.0.1
+dbname = elsa_vmail
+query = select 1 as found from vmail_accounts where username = '%u' and domain = '%d' and enabled = true LIMIT 1;

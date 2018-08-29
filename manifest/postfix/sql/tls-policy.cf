@@ -1,0 +1,5 @@
+user = elsa_vmail
+password = dc976b8caae4e9d4
+hosts = 127.0.0.1
+dbname = elsa_vmail
+query = SELECT policy, params FROM vmail_tlspolicies WHERE domain = '%s'
